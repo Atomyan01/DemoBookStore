@@ -1,0 +1,11 @@
+﻿namespace DemoBookStore.Models
+{
+    public class AwardModel
+    {
+        public int Id { get; set; }
+        public string Title { get; set; }
+        public string Description { get; set; }
+        public List<UserModel> Founders { get; set; } = new List<UserModel>();
+        public DateTime Date { get; set; }
+    }
+}
