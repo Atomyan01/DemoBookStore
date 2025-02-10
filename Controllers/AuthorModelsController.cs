@@ -7,6 +7,9 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Data;
 using DemoBookStore.Models;
+using System.Text.RegularExpressions;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace DemoBookStore.Controllers
 {
@@ -56,7 +59,8 @@ namespace DemoBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AverageScore,Id,FirstName,LastName,Email,Password")] AuthorModel authorModel)
         {
-            if (ModelState.IsValid)
+            authorModel.Password = HashPassword.ProceedData(authorModel.Password);
+            if (ModelState.IsValid && !CheckEmail(authorModel.Email))
             {
                 _context.Add(authorModel);
                 await _context.SaveChangesAsync();
@@ -64,6 +68,14 @@ namespace DemoBookStore.Controllers
             }
             return View(authorModel);
         }
+
+
+      
+        
+            
+
+        
+
 
         // GET: AuthorModels/Edit/5
         public async Task<IActionResult> Edit(int? id)
@@ -158,7 +170,17 @@ namespace DemoBookStore.Controllers
         {
             List<AuthorModel> authors = _context.AuthorModel.ToListAsync().Result;
 
-            return false;
+            foreach (AuthorModel author in authors)
+            {
+                if (author.Email == email)
+                {
+                    return true;
+                }
+            }
+
+            string stugum1 = "^\\S+@\\S+\\.\\S+$";
+            Regex regex1 = new Regex(stugum1);
+            return !regex1.IsMatch(email);    
         }
 
 
