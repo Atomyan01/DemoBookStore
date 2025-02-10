@@ -11,150 +11,150 @@ using System.Text.RegularExpressions;
 
 namespace DemoBookStore.Controllers
 {
-    public class UserController : Controller
-    {
-        private readonly DemoBookStoreContext _context;
+	public class UserController : Controller
+	{
+		private readonly DemoBookStoreContext _context;
 
-        public UserController(DemoBookStoreContext context)
-        {
-            _context = context;
-        }
+		public UserController(DemoBookStoreContext context)
+		{
+			_context = context;
+		}
 
-        // GET: User
-        public async Task<IActionResult> Index()
-        {
-            return View(await _context.UserModel.ToListAsync());
-        }
+		// GET: User
+		public async Task<IActionResult> Index()
+		{
+			return View(await _context.UserModel.ToListAsync());
+		}
 
-        // GET: User/Details/5
-        public async Task<IActionResult> Details(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: User/Details/5
+		public async Task<IActionResult> Details(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            var userModel = await _context.UserModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userModel == null)
-            {
-                return NotFound();
-            }
+			var userModel = await _context.UserModel
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (userModel == null)
+			{
+				return NotFound();
+			}
 
-            return View(userModel);
-        }
+			return View(userModel);
+		}
 
-        // GET: User/Create
-        public IActionResult Create()
-        {
-            return View();
-        }
+		// GET: User/Create
+		public IActionResult Create()
+		{
+			return View();
+		}
 
-        // POST: User/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
-        {
+		// POST: User/Create
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Create([Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
+		{
 			userModel.Password = HashPassword.ProceedData(userModel.Password);
 			if (ModelState.IsValid)
-            {
-                _context.Add(userModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(userModel);
-        }
+			{
+				_context.Add(userModel);
+				await _context.SaveChangesAsync();
+				return RedirectToAction(nameof(Index));
+			}
+			return View(userModel);
+		}
 
-        // GET: User/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: User/Edit/5
+		public async Task<IActionResult> Edit(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            var userModel = await _context.UserModel.FindAsync(id);
-            if (userModel == null)
-            {
-                return NotFound();
-            }
-            return View(userModel);
-        }
+			var userModel = await _context.UserModel.FindAsync(id);
+			if (userModel == null)
+			{
+				return NotFound();
+			}
+			return View(userModel);
+		}
 
-        // POST: User/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
-        {
-            if (id != userModel.Id)
-            {
-                return NotFound();
-            }
+		// POST: User/Edit/5
+		// To protect from overposting attacks, enable the specific properties you want to bind to.
+		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+		[HttpPost]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> Edit(int id, [Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
+		{
+			if (id != userModel.Id)
+			{
+				return NotFound();
+			}
 
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(userModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!UserModelExists(userModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(userModel);
-        }
+			if (ModelState.IsValid)
+			{
+				try
+				{
+					_context.Update(userModel);
+					await _context.SaveChangesAsync();
+				}
+				catch (DbUpdateConcurrencyException)
+				{
+					if (!UserModelExists(userModel.Id))
+					{
+						return NotFound();
+					}
+					else
+					{
+						throw;
+					}
+				}
+				return RedirectToAction(nameof(Index));
+			}
+			return View(userModel);
+		}
 
-        // GET: User/Delete/5
-        public async Task<IActionResult> Delete(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+		// GET: User/Delete/5
+		public async Task<IActionResult> Delete(int? id)
+		{
+			if (id == null)
+			{
+				return NotFound();
+			}
 
-            var userModel = await _context.UserModel
-                .FirstOrDefaultAsync(m => m.Id == id);
-            if (userModel == null)
-            {
-                return NotFound();
-            }
+			var userModel = await _context.UserModel
+				.FirstOrDefaultAsync(m => m.Id == id);
+			if (userModel == null)
+			{
+				return NotFound();
+			}
 
-            return View(userModel);
-        }
+			return View(userModel);
+		}
 
-        // POST: User/Delete/5
-        [HttpPost, ActionName("Delete")]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
-        {
-            var userModel = await _context.UserModel.FindAsync(id);
-            if (userModel != null)
-            {
-                _context.UserModel.Remove(userModel);
-            }
+		// POST: User/Delete/5
+		[HttpPost, ActionName("Delete")]
+		[ValidateAntiForgeryToken]
+		public async Task<IActionResult> DeleteConfirmed(int id)
+		{
+			var userModel = await _context.UserModel.FindAsync(id);
+			if (userModel != null)
+			{
+				_context.UserModel.Remove(userModel);
+			}
 
-            await _context.SaveChangesAsync();
-            return RedirectToAction(nameof(Index));
-        }
+			await _context.SaveChangesAsync();
+			return RedirectToAction(nameof(Index));
+		}
 
-        private bool UserModelExists(int id)
-        {
-            return _context.UserModel.Any(e => e.Id == id);
-        }
+		private bool UserModelExists(int id)
+		{
+			return _context.UserModel.Any(e => e.Id == id);
+		}
 
 
 		private bool CheckEmail(string email)
@@ -174,7 +174,29 @@ namespace DemoBookStore.Controllers
 			return !regex1.IsMatch(email);
 		}
 
-		
+		public IActionResult Login()
+		{
+			return View();
+		}
+
+		[HttpPost]
+
+		public async Task<IActionResult> Login(UserModel userModel)
+		{
+			var user = SearchByEmail(userModel.Email);
+			if(user!= null)
+			{
+				return View(user);
+			}
+			return RedirectToAction(nameof(Index));
+		}
+
+
+
+		private UserModel? SearchByEmail(string email)
+		{
+			return _context.UserModel.FirstOrDefault(user => user.Email == email);
+		}
 
 	}
 }

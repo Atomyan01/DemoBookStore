@@ -1,6 +1,8 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using DemoBookStore.Data;
+using DemoBookStore.Models;
+using Microsoft.AspNetCore.Identity;
 namespace DemoBookStore
 {
     public class Program
@@ -11,6 +13,10 @@ namespace DemoBookStore
             builder.Services.AddDbContext<DemoBookStoreContext>(options =>
                 options.UseSqlServer(builder.Configuration.GetConnectionString("DemoBookStoreContext") ?? throw new InvalidOperationException("Connection string 'DemoBookStoreContext' not found.")));
 
+
+            builder.Services.AddIdentity<UserModel,IdentityRole>().
+            AddEntityFrameworkStores<DemoBookStoreContext>().
+            AddDefaultTokenProviders();
             // Add services to the container.
             builder.Services.AddControllersWithViews();
 

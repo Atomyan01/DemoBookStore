@@ -184,5 +184,29 @@ namespace DemoBookStore.Controllers
         }
 
 
-    }
+		public IActionResult Login()
+		{
+			return View();
+		}
+
+		[HttpPost]
+
+		public async Task<IActionResult> Login(AuthorModel authorModel)
+		{
+			var author = SearchByEmail(authorModel.Email);
+			if (author != null)
+			{
+				return View(author);
+			}
+			return RedirectToAction(nameof(Index));
+		}
+
+
+
+		private AuthorModel? SearchByEmail(string email)
+		{
+			return _context.AuthorModel.FirstOrDefault(author => author.Email == email);
+		}
+
+	}
 }

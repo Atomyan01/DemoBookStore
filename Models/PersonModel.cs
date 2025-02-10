@@ -1,8 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.AspNetCore.Identity;
 
 namespace DemoBookStore.Models
 {
-    public class PersonModel
+    public class PersonModel:IdentityUser
     {
         public int Id { get; set; }
         public string FirstName { get; set; }

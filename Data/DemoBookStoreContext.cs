@@ -14,7 +14,13 @@ namespace DemoBookStore.Data
         {
         }
 
-        public DbSet<DemoBookStore.Models.BookModel> BookModel { get; set; } = default!;
+		protected override void OnModelCreating(ModelBuilder modelBuilder)
+		{
+			base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<UserModel>().ToTable("AspNetUsers");
+		}
+
+		public DbSet<DemoBookStore.Models.BookModel> BookModel { get; set; } = default!;
         public DbSet<DemoBookStore.Models.AuthorModel> AuthorModel { get; set; } = default!;
         public DbSet<DemoBookStore.Models.UserModel> UserModel { get; set; } = default!;
     }
