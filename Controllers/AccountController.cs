@@ -8,5 +8,9 @@ namespace DemoBookStore.Controllers
 		{
 			return View();
 		}
+		public IActionResult Register()
+		{
+			return View();
+		}
 	}
 }

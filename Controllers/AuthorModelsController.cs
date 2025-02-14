@@ -29,7 +29,7 @@ namespace DemoBookStore.Controllers
         }
 
         // GET: AuthorModels/Details/5
-        public async Task<IActionResult> Details(int? id)
+        public async Task<IActionResult> Details(string id)
         {
             if (id == null)
             {
@@ -59,13 +59,7 @@ namespace DemoBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AverageScore,Id,FirstName,LastName,Email,Password")] AuthorModel authorModel)
         {
-            authorModel.Password = HashPassword.ProceedData(authorModel.Password);
-            if (ModelState.IsValid && !CheckEmail(authorModel.Email))
-            {
-                _context.Add(authorModel);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
+           
             return View(authorModel);
         }
 
@@ -100,36 +94,12 @@ namespace DemoBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("AverageScore,Id,FirstName,LastName,Email,Password")] AuthorModel authorModel)
         {
-            if (id != authorModel.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    _context.Update(authorModel);
-                    await _context.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!AuthorModelExists(authorModel.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
+            
             return View(authorModel);
         }
 
         // GET: AuthorModels/Delete/5
-        public async Task<IActionResult> Delete(int? id)
+        public async Task<IActionResult> Delete(string id)
         {
             if (id == null)
             {
@@ -161,7 +131,7 @@ namespace DemoBookStore.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        private bool AuthorModelExists(int id)
+        private bool AuthorModelExists(string id)
         {
             return _context.AuthorModel.Any(e => e.Id == id);
         }

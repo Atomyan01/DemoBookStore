@@ -8,16 +8,27 @@ using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Data;
 using DemoBookStore.Models;
 using System.Text.RegularExpressions;
+using System.Drawing.Text;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.CodeAnalysis.CSharp.Syntax;
 
 namespace DemoBookStore.Controllers
 {
 	public class UserController : Controller
 	{
 		private readonly DemoBookStoreContext _context;
+		private readonly SignInManager<UserModel> _signInManager;
+		
+		private readonly UserManager<UserModel> _userManager;
 
-		public UserController(DemoBookStoreContext context)
+		public UserController(DemoBookStoreContext context, SignInManager<UserModel> signInManager,  UserManager<UserModel> userManager)
 		{
 			_context = context;
+			_signInManager = signInManager;
+			
+			_userManager = userManager;
+			
+
 		}
 
 		// GET: User
@@ -27,7 +38,7 @@ namespace DemoBookStore.Controllers
 		}
 
 		// GET: User/Details/5
-		public async Task<IActionResult> Details(int? id)
+		public async Task<IActionResult> Details(string id)
 		{
 			if (id == null)
 			{
@@ -44,6 +55,9 @@ namespace DemoBookStore.Controllers
 			return View(userModel);
 		}
 
+
+		
+
 		// GET: User/Create
 		public IActionResult Create()
 		{
@@ -55,15 +69,20 @@ namespace DemoBookStore.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Create([Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
+		public async Task<IActionResult> Create([Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel, string password)
 		{
-			userModel.Password = HashPassword.ProceedData(userModel.Password);
+			userModel.LockoutEnabled = false;
+			userModel.NormalizedEmail = _userManager.NormalizeEmail(userModel.Email);
+			userModel.NormalizedUserName = userModel.Email;
+			userModel.PasswordHash = HashPassword.ProceedData(password);
+
 			if (ModelState.IsValid)
 			{
 				_context.Add(userModel);
 				await _context.SaveChangesAsync();
 				return RedirectToAction(nameof(Index));
 			}
+			
 			return View(userModel);
 		}
 
@@ -88,12 +107,9 @@ namespace DemoBookStore.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(int id, [Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
+		public async Task<IActionResult> Edit(string id, [Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
 		{
-			if (id != userModel.Id)
-			{
-				return NotFound();
-			}
+			
 
 			if (ModelState.IsValid)
 			{
@@ -104,14 +120,7 @@ namespace DemoBookStore.Controllers
 				}
 				catch (DbUpdateConcurrencyException)
 				{
-					if (!UserModelExists(userModel.Id))
-					{
-						return NotFound();
-					}
-					else
-					{
-						throw;
-					}
+					
 				}
 				return RedirectToAction(nameof(Index));
 			}
@@ -119,7 +128,7 @@ namespace DemoBookStore.Controllers
 		}
 
 		// GET: User/Delete/5
-		public async Task<IActionResult> Delete(int? id)
+		public async Task<IActionResult> Delete(string id)
 		{
 			if (id == null)
 			{
@@ -151,7 +160,33 @@ namespace DemoBookStore.Controllers
 			return RedirectToAction(nameof(Index));
 		}
 
-		private bool UserModelExists(int id)
+		[HttpPost]
+		public async Task <IActionResult> Login (string email, string password)
+		{
+			var user = await _userManager.FindByEmailAsync(email);
+			if(user!= null)
+			{
+				string hashPassword = HashPassword.ProceedData(password);
+				var result = await _signInManager.PasswordSignInAsync(user, hashPassword, false, false);
+				if (result.Succeeded)
+				{
+					return RedirectToAction("Index","Home");
+					
+				}
+				else
+				{
+					ModelState.AddModelError("", "Invalid Email or Password");
+				}
+			}
+			else
+			{
+				ModelState.AddModelError("", "User Not Found");
+			}
+
+			return View();
+		}
+
+		private bool UserModelExists(string id)
 		{
 			return _context.UserModel.Any(e => e.Id == id);
 		}
@@ -178,21 +213,6 @@ namespace DemoBookStore.Controllers
 		{
 			return View();
 		}
-
-		[HttpPost]
-
-		public async Task<IActionResult> Login(UserModel userModel)
-		{
-			var user = SearchByEmail(userModel.Email);
-			if(user!= null)
-			{
-				return View(user);
-			}
-			return RedirectToAction(nameof(Index));
-		}
-
-
-
 		private UserModel? SearchByEmail(string email)
 		{
 			return _context.UserModel.FirstOrDefault(user => user.Email == email);
