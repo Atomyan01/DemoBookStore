@@ -4,10 +4,11 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using DemoBookStore.Models;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 
 namespace DemoBookStore.Data
 {
-    public class DemoBookStoreContext : DbContext
+    public class DemoBookStoreContext : IdentityDbContext<UserModel>
     {
         public DemoBookStoreContext (DbContextOptions<DemoBookStoreContext> options)
             : base(options)
@@ -18,6 +19,7 @@ namespace DemoBookStore.Data
 		{
 			base.OnModelCreating(modelBuilder);
             modelBuilder.Entity<UserModel>().ToTable("AspNetUsers");
+            modelBuilder.Entity<AuthorModel>().ToTable("Authors");
 		}
 
 		public DbSet<DemoBookStore.Models.BookModel> BookModel { get; set; } = default!;

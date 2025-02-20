@@ -10,6 +10,7 @@ using DemoBookStore.Models;
 using System.Text.RegularExpressions;
 using System.Security.Cryptography;
 using System.Text;
+using Microsoft.Build.Framework;
 
 namespace DemoBookStore.Controllers
 {
@@ -59,20 +60,20 @@ namespace DemoBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("AverageScore,Id,FirstName,LastName,Email,Password")] AuthorModel authorModel)
         {
-           
+
             return View(authorModel);
         }
 
 
-      
-        
-            
 
-        
+
+
+
+
 
 
         // GET: AuthorModels/Edit/5
-        public async Task<IActionResult> Edit(int? id)
+        public async Task<IActionResult> Edit(string? id)
         {
             if (id == null)
             {
@@ -92,9 +93,9 @@ namespace DemoBookStore.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("AverageScore,Id,FirstName,LastName,Email,Password")] AuthorModel authorModel)
+        public async Task<IActionResult> Edit(string id, [Bind("AverageScore,Id,FirstName,LastName,Email,Password")] AuthorModel authorModel)
         {
-            
+
             return View(authorModel);
         }
 
@@ -119,7 +120,7 @@ namespace DemoBookStore.Controllers
         // POST: AuthorModels/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int id)
+        public async Task<IActionResult> DeleteConfirmed(string id)
         {
             var authorModel = await _context.AuthorModel.FindAsync(id);
             if (authorModel != null)
@@ -150,33 +151,18 @@ namespace DemoBookStore.Controllers
 
             string stugum1 = "^\\S+@\\S+\\.\\S+$";
             Regex regex1 = new Regex(stugum1);
-            return !regex1.IsMatch(email);    
+            return !regex1.IsMatch(email);
         }
 
 
-		public IActionResult Login()
-		{
-			return View();
-		}
+        public IActionResult Login()
+        {
+            return View();
+        }
 
-		[HttpPost]
-
-		public async Task<IActionResult> Login(AuthorModel authorModel)
-		{
-			var author = SearchByEmail(authorModel.Email);
-			if (author != null)
-			{
-				return View(author);
-			}
-			return RedirectToAction(nameof(Index));
-		}
+        
 
 
-
-		private AuthorModel? SearchByEmail(string email)
-		{
-			return _context.AuthorModel.FirstOrDefault(author => author.Email == email);
-		}
-
-	}
+    }
 }
+

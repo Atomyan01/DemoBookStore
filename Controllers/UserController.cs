@@ -11,6 +11,7 @@ using System.Text.RegularExpressions;
 using System.Drawing.Text;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.CodeAnalysis.CSharp.Syntax;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace DemoBookStore.Controllers
 {
@@ -27,9 +28,10 @@ namespace DemoBookStore.Controllers
 			_signInManager = signInManager;
 			
 			_userManager = userManager;
-			
 
 		}
+
+		
 
 		// GET: User
 		public async Task<IActionResult> Index()
@@ -37,6 +39,9 @@ namespace DemoBookStore.Controllers
 			return View(await _context.UserModel.ToListAsync());
 		}
 
+		
+
+		
 		// GET: User/Details/5
 		public async Task<IActionResult> Details(string id)
 		{
@@ -58,6 +63,8 @@ namespace DemoBookStore.Controllers
 
 		
 
+		
+
 		// GET: User/Create
 		public IActionResult Create()
 		{
@@ -74,20 +81,46 @@ namespace DemoBookStore.Controllers
 			userModel.LockoutEnabled = false;
 			userModel.NormalizedEmail = _userManager.NormalizeEmail(userModel.Email);
 			userModel.NormalizedUserName = userModel.Email;
-			userModel.PasswordHash = HashPassword.ProceedData(password);
+			userModel.PasswordHash = password;
 
 			if (ModelState.IsValid)
 			{
-				_context.Add(userModel);
-				await _context.SaveChangesAsync();
-				return RedirectToAction(nameof(Index));
+				var user = new UserModel
+				{
+					UserName = userModel.Email,
+					Email = userModel.Email,
+					FirstName = userModel.FirstName,
+					LastName = userModel.LastName,
+					Age = userModel.Age,
+					Address = userModel.Address,
+					NormalizedEmail = userModel.NormalizedEmail,
+					PasswordHash = userModel.PasswordHash,
+
+				};
+
+				var result = await _userManager.CreateAsync(user,password);
+
+				if (result.Succeeded)
+				{
+					await _signInManager.SignInAsync(user, isPersistent: false);
+					return RedirectToAction("Index", "Home");
+				}
+
+				else
+				{
+					foreach(var error in result.Errors)
+					{
+						ModelState.AddModelError("", error.Description);
+					}
+				}
+				
 			}
 			
 			return View(userModel);
 		}
 
 		// GET: User/Edit/5
-		public async Task<IActionResult> Edit(int? id)
+		public async Task<IActionResult> Edit(string id)
 		{
 			if (id == null)
 			{
@@ -107,7 +140,7 @@ namespace DemoBookStore.Controllers
 		// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
 		[HttpPost]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> Edit(string id, [Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
+		public async Task<IActionResult> Edit(string? id, [Bind("Age,Address,Id,FirstName,LastName,Email,Password")] UserModel userModel)
 		{
 			
 
@@ -148,7 +181,7 @@ namespace DemoBookStore.Controllers
 		// POST: User/Delete/5
 		[HttpPost, ActionName("Delete")]
 		[ValidateAntiForgeryToken]
-		public async Task<IActionResult> DeleteConfirmed(int id)
+		public async Task<IActionResult> DeleteConfirmed(string id)
 		{
 			var userModel = await _context.UserModel.FindAsync(id);
 			if (userModel != null)
@@ -166,7 +199,7 @@ namespace DemoBookStore.Controllers
 			var user = await _userManager.FindByEmailAsync(email);
 			if(user!= null)
 			{
-				string hashPassword = HashPassword.ProceedData(password);
+				string hashPassword = password;
 				var result = await _signInManager.PasswordSignInAsync(user, hashPassword, false, false);
 				if (result.Succeeded)
 				{
@@ -184,11 +217,6 @@ namespace DemoBookStore.Controllers
 			}
 
 			return View();
-		}
-
-		private bool UserModelExists(string id)
-		{
-			return _context.UserModel.Any(e => e.Id == id);
 		}
 
 
@@ -217,6 +245,12 @@ namespace DemoBookStore.Controllers
 		{
 			return _context.UserModel.FirstOrDefault(user => user.Email == email);
 		}
+
+		private bool UserModelExists(string id)
+		{
+			return _context.Users.FirstOrDefaultAsync(user => user.Id == id ) != null;
+		}
+	
 
 	}
 }
