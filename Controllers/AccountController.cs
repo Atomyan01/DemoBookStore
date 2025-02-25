@@ -26,8 +26,6 @@ namespace DemoBookStore.Controllers
 			return View();
 		}
 
-		[HttpPost]
-
 		public async Task<IActionResult> LogoutConfirmed()
 		{
 			await _signInManager.SignOutAsync();
