@@ -12,8 +12,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DemoBookStore.Migrations
 {
     [DbContext(typeof(DemoBookStoreContext))]
-    [Migration("20250219143252_[FixRegistration]")]
-    partial class FixRegistration
+    [Migration("20250228072147_add")]
+    partial class add
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -157,6 +157,9 @@ namespace DemoBookStore.Migrations
                     b.Property<bool>("IsElectronic")
                         .HasColumnType("bit");
 
+                    b.Property<int?>("OrderModelId")
+                        .HasColumnType("int");
+
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -166,7 +169,30 @@ namespace DemoBookStore.Migrations
 
                     b.HasKey("ID");
 
+                    b.HasIndex("OrderModelId");
+
                     b.ToTable("BookModel");
+                });
+
+            modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<DateTime>("Date")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("UserId")
+                        .HasColumnType("nvarchar(450)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("DemoBookStore.Models.ReviewModel", b =>
@@ -444,6 +470,22 @@ namespace DemoBookStore.Migrations
                         .HasForeignKey("AuthorModelId");
                 });
 
+            modelBuilder.Entity("DemoBookStore.Models.BookModel", b =>
+                {
+                    b.HasOne("DemoBookStore.Models.OrderModel", null)
+                        .WithMany("Books")
+                        .HasForeignKey("OrderModelId");
+                });
+
+            modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
+                {
+                    b.HasOne("DemoBookStore.Models.UserModel", "User")
+                        .WithMany("OrderS")
+                        .HasForeignKey("UserId");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("DemoBookStore.Models.ReviewModel", b =>
                 {
                     b.HasOne("DemoBookStore.Models.BookModel", "Book")
@@ -531,8 +573,15 @@ namespace DemoBookStore.Migrations
                     b.Navigation("Founders");
                 });
 
+            modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
+                {
+                    b.Navigation("Books");
+                });
+
             modelBuilder.Entity("DemoBookStore.Models.UserModel", b =>
                 {
+                    b.Navigation("OrderS");
+
                     b.Navigation("Reviews");
                 });
 #pragma warning restore 612, 618

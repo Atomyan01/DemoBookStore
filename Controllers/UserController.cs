@@ -83,6 +83,7 @@ namespace DemoBookStore.Controllers
 			userModel.NormalizedUserName = userModel.Email;
 			userModel.PasswordHash = password;
 
+			ModelState.Remove("Orders");
 			if (ModelState.IsValid)
 			{
 				var user = new UserModel

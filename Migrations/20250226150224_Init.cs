@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace DemoBookStore.Migrations
 {
     /// <inheritdoc />
-    public partial class FixRegistration : Migration
+    public partial class Init : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -259,6 +259,26 @@ namespace DemoBookStore.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "OrderModel",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    UserId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    Date = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_OrderModel", x => x.Id);
+                    table.ForeignKey(
+                        name: "FK_OrderModel_AspNetUsers_UserId",
+                        column: x => x.UserId,
+                        principalTable: "AspNetUsers",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "ReviewModel",
                 columns: table => new
                 {
@@ -342,6 +362,11 @@ namespace DemoBookStore.Migrations
                 column: "AuthorModelId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_OrderModel_UserId",
+                table: "OrderModel",
+                column: "UserId");
+
+            migrationBuilder.CreateIndex(
                 name: "IX_ReviewModel_BookID",
                 table: "ReviewModel",
                 column: "BookID");
@@ -372,6 +397,9 @@ namespace DemoBookStore.Migrations
 
             migrationBuilder.DropTable(
                 name: "AuthorModelBookModel");
+
+            migrationBuilder.DropTable(
+                name: "OrderModel");
 
             migrationBuilder.DropTable(
                 name: "ReviewModel");

@@ -1,10 +1,14 @@
 ﻿using DemoBookStore.Data;
 using DemoBookStore.Helpers;
 using DemoBookStore.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DemoBookStore.Controllers
 {
+	
+
+
 	public class OrderSessionController : Controller
 	{
 		private readonly DemoBookStoreContext _context;
@@ -14,12 +18,41 @@ namespace DemoBookStore.Controllers
 		{
 			_context = context;
 		}
+
+
 		public IActionResult Index()
 		{
 			var order = HttpContext.Session.GetObject<List<BookModel>>(SessionKey) ?? new List<BookModel>();
-			return View(order);
+
+			Dictionary<int,int> counts = new Dictionary<int,int>();
+			Dictionary<int, decimal>  sums = new Dictionary<int, decimal>();
+			List<BookModel> uniqueBooks = new List<BookModel>();
+
+			foreach(var o in order)
+			{
+				if (counts.ContainsKey(o.ID))
+				{
+					counts[o.ID] += 1;
+					sums[o.ID] += o.Price;
+				}
+				else
+				{
+					counts.Add(o.ID, 1);
+					sums.Add(o.ID, o.Price);
+					uniqueBooks.Add(o);
+				}
+
+			}
+
+			ViewBag.Counts = counts;
+			ViewBag.Sums = sums;
+			ViewBag.Sum = sums.Values.Sum();
+			return View(uniqueBooks);
+
 		}
 
+
+		[Authorize]
 		public IActionResult AddToOrder(int id)
 		{
 			var book = _context.BookModel.Find(id);
@@ -32,8 +65,8 @@ namespace DemoBookStore.Controllers
 			return RedirectToAction("Index");
 		}
 
-		
 
+		[Authorize]
 		public IActionResult RemoveFromOrder(int id)
 		{
 			var order = HttpContext.Session.GetObject<List<BookModel>>(SessionKey) ?? new List<BookModel>();
@@ -49,8 +82,8 @@ namespace DemoBookStore.Controllers
 
 		}
 
-		
 
+		[Authorize]
 		public IActionResult ClearOrder()
 		{
 			HttpContext.Session.Remove(SessionKey);
@@ -59,6 +92,7 @@ namespace DemoBookStore.Controllers
 
 
 	}
+	
 
 
 }

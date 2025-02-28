@@ -4,6 +4,7 @@ using DemoBookStore.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace DemoBookStore.Migrations
 {
     [DbContext(typeof(DemoBookStoreContext))]
-    partial class DemoBookStoreContextModelSnapshot : ModelSnapshot
+    [Migration("20250226150224_Init")]
+    partial class Init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -154,9 +157,6 @@ namespace DemoBookStore.Migrations
                     b.Property<bool>("IsElectronic")
                         .HasColumnType("bit");
 
-                    b.Property<int?>("OrderModelId")
-                        .HasColumnType("int");
-
                     b.Property<decimal>("Price")
                         .HasColumnType("decimal(18,2)");
 
@@ -165,8 +165,6 @@ namespace DemoBookStore.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.HasKey("ID");
-
-                    b.HasIndex("OrderModelId");
 
                     b.ToTable("BookModel");
                 });
@@ -183,13 +181,14 @@ namespace DemoBookStore.Migrations
                         .HasColumnType("datetime2");
 
                     b.Property<string>("UserId")
+                        .IsRequired()
                         .HasColumnType("nvarchar(450)");
 
                     b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("Orders");
+                    b.ToTable("OrderModel");
                 });
 
             modelBuilder.Entity("DemoBookStore.Models.ReviewModel", b =>
@@ -467,18 +466,13 @@ namespace DemoBookStore.Migrations
                         .HasForeignKey("AuthorModelId");
                 });
 
-            modelBuilder.Entity("DemoBookStore.Models.BookModel", b =>
-                {
-                    b.HasOne("DemoBookStore.Models.OrderModel", null)
-                        .WithMany("Books")
-                        .HasForeignKey("OrderModelId");
-                });
-
             modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
                 {
                     b.HasOne("DemoBookStore.Models.UserModel", "User")
                         .WithMany("OrderS")
-                        .HasForeignKey("UserId");
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.Navigation("User");
                 });
@@ -568,11 +562,6 @@ namespace DemoBookStore.Migrations
             modelBuilder.Entity("DemoBookStore.Models.AwardModel", b =>
                 {
                     b.Navigation("Founders");
-                });
-
-            modelBuilder.Entity("DemoBookStore.Models.OrderModel", b =>
-                {
-                    b.Navigation("Books");
                 });
 
             modelBuilder.Entity("DemoBookStore.Models.UserModel", b =>

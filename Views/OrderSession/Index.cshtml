@@ -22,6 +22,15 @@
             <th>
                 @Html.DisplayNameFor(model => model.Price)
             </th>
+            <th>
+                Price for each book
+            </th>
+            <th>
+                Price for Books
+            </th>
+            <th>
+                Count
+            </th>
            
            
            
@@ -40,10 +49,14 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.Price)
-            </td>
-           
-            
-            
+                </td>
+                <td>
+                    @ViewBag.Sums[item.ID]
+                </td>
+
+                <td>
+                    @ViewBag.Counts[item.ID]
+                </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.ID">Edit</a> |
                 <a asp-action="Details" asp-route-id="@item.ID">Details</a> |
@@ -56,5 +69,10 @@
 }
     </tbody>
 </table>
+<h3>
+    Total Amount to Pay: @ViewBag.Sum
+</h3>
+
+<a class="btn btn-primary" asp-controller="Order" asp-action="Index">Buy</a>
 
 
