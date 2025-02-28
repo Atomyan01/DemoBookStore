@@ -47,7 +47,16 @@ namespace DemoBookStore.Controllers
         // GET: Book/Create
         public IActionResult Create()
         {
+
+            var authors = _context.AuthorModel
+                .Select(a => new SelectListItem
+                {
+                    Value = a.Id,
+                    Text = a.FirstName + " " + a.LastName + " " + a.Email
+                }).ToList();
+            ViewData["Authors"] = authors;
             return View();
+
         }
 
         // POST: Book/Create
@@ -57,7 +66,7 @@ namespace DemoBookStore.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("ID,Title,Description,Genre,Price,IsElectronic,IsAvailable,AgeRestriction")] BookModel bookModel)
         {
-            if (ModelState.IsValid && bookModel.AgeRestriction>=0)
+            if (ModelState.IsValid && bookModel.AgeRestriction >= 0)
             {
                 _context.Add(bookModel);
                 await _context.SaveChangesAsync();
@@ -95,7 +104,7 @@ namespace DemoBookStore.Controllers
                 return NotFound();
             }
 
-            if (ModelState.IsValid  )
+            if (ModelState.IsValid)
             {
                 try
                 {

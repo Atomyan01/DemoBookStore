@@ -32,6 +32,24 @@
                 <input asp-for="Price" class="form-control" />
                 <span asp-validation-for="Price" class="text-danger"></span>
             </div>
+
+
+
+            
+           <p>If you can't find your name in the list below, please <a asp-controller="Account" asp-action="Register">register as an auther</</a></p>
+
+
+            <div class= "form-group">
+                <label asp-for="Authors">Authors</label>
+                <select asp-for="Authors" class="form-control" multiple>
+                    @foreach(var author in (IEnumerable<SelectListItem>)ViewData["Authors"]) 
+                        {
+                            <option value="@author.Value">@author.Text</option>
+                        }
+                </select>
+                
+                <span asp-validation-for="Authors">class="text-danger"></span>
+
             <div class="authors_container">
             <label>Authors</label>
             <button type = "button" id = "add-author" class="btn btn-success btn -sm">Add Author</button>
@@ -69,31 +87,6 @@
 
 
     <script>
-        let authorIndex = 0;
-
-        document.getElementById("add-author").addEventListener("click", function () {
-            let container = document.getElementById("authors-list");
-
-            let html = "<div class='form-group author-entry'>" +  
-                "<label>First Name</label>" +
-                "<input type='text' name='Authors[" + authorIndex + "].FirstName' class='form-control' required/>" +
-                "<label>Last Name</label>" +
-                "<input type='text' name='Authors[" + authorIndex + "].LastName' class='form-control' required/>" +
-                "<button type='button' class='btn btn-danger remove-author'>Remove</button>" +  
-                "</div>";
-
-            container.insertAdjacentHTML("beforeend", html);
-            authorIndex++;
-        });
-
-        
-        document.getElementById("authors-list").addEventListener("click", function (event) {
-            if (event.target.classList.contains("remove-author")) {
-                event.target.closest(".author-entry").remove();
-            }
-        });
-
-
         document.getElementById("AgeRestriction").addEventListener("input", function () {
             if (this.value < 0) { 
                 this.value = 0

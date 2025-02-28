@@ -19,7 +19,6 @@ namespace DemoBookStore.Controllers
 	{
 		private readonly DemoBookStoreContext _context;
 		private readonly SignInManager<UserModel> _signInManager;
-		
 		private readonly UserManager<UserModel> _userManager;
 
 		public UserController(DemoBookStoreContext context, SignInManager<UserModel> signInManager,  UserManager<UserModel> userManager)
@@ -83,7 +82,7 @@ namespace DemoBookStore.Controllers
 			userModel.NormalizedUserName = userModel.Email;
 			userModel.PasswordHash = password;
 
-			ModelState.Remove("Orders");
+			ModelState.Remove("Orders"); // Optional
 			if (ModelState.IsValid)
 			{
 				var user = new UserModel

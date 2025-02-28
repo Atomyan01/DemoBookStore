@@ -2,7 +2,7 @@
 {
     public class BookModel
     {
-        public int  ID { get; set; }
+        public int ID { get; set; }
         public string Title { get; set; }
         public string Description { get; set; }
         public List<AuthorModel> Authors { get; set; } = new List<AuthorModel>();
@@ -11,6 +11,7 @@
         public bool IsElectronic { get; set; }
         public bool IsAvailable { get; set; }
         public int? AgeRestriction { get; set; }
+        public List<OrderModel> Orders { get; set; } = new List<OrderModel>();
 
     }
 }
