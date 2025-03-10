@@ -52,7 +52,28 @@ namespace DemoBookStore.Controllers
 		}
 
 
-		[Authorize]
+        public IActionResult Reviews()
+        {
+            var reviews = HttpContext.Session.GetObject<List<ReviewModel>>(SessionKey) ?? new List<ReviewModel>();
+
+            Dictionary<int, int> starsCount = new Dictionary<int, int>();
+            List<ReviewModel> uniqueReviews = new List<ReviewModel>();
+
+            foreach (var review in reviews)
+            {
+                if (!starsCount.ContainsKey(review.Id))
+                {
+                    starsCount.Add(review.Id, review.Stars);
+                    uniqueReviews.Add(review);
+                }
+            }
+
+            ViewBag.StarsCount = starsCount;
+            return View(uniqueReviews);
+        }
+
+
+        [Authorize]
 		public IActionResult AddToOrder(int id)
 		{
 			var book = _context.BookModel.Find(id);

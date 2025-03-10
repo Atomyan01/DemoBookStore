@@ -41,8 +41,24 @@ namespace DemoBookStore.Controllers
                 return NotFound();
             }
 
-            return View(bookModel);
+			List<ReviewModel> reviews = await _context.Reviews.ToListAsync();
+
+
+			foreach (var review in reviews)
+			{
+				if (review.Book.ID != id)
+				{
+					reviews.Remove(review);
+				}
+			}
+
+			ViewBag.Reviews = reviews;
+			return View(bookModel);
         }
+
+
+
+
 
         // GET: Book/Create
         public IActionResult Create()
@@ -142,6 +158,8 @@ namespace DemoBookStore.Controllers
                 return NotFound();
             }
 
+
+
             return View(bookModel);
         }
 
@@ -160,9 +178,15 @@ namespace DemoBookStore.Controllers
             return RedirectToAction(nameof(Index));
         }
 
+
+
+
         private bool BookModelExists(int id)
         {
             return _context.BookModel.Any(e => e.ID == id);
         }
+
+
+
     }
 }

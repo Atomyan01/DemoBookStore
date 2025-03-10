@@ -26,7 +26,7 @@ namespace DemoBookStore.Data
         public DbSet<DemoBookStore.Models.AuthorModel> AuthorModel { get; set; } = default!;
         public DbSet<DemoBookStore.Models.UserModel> UserModel { get; set; } = default!;
         public DbSet<OrderModel> Orders { get; set; } = default;
-             
+        public DbSet<ReviewModel> Reviews { get; set; }
 
     }
 }
