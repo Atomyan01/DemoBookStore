@@ -41,16 +41,11 @@ namespace DemoBookStore.Controllers
                 return NotFound();
             }
 
-			List<ReviewModel> reviews = await _context.Reviews.ToListAsync();
+			List<ReviewModel> reviews = await _context.ReviewModel
+                .Where(r => r.Book.ID == id)
+                .Include(r => r.User)
+                .ToListAsync();
 
-
-			foreach (var review in reviews)
-			{
-				if (review.Book.ID != id)
-				{
-					reviews.Remove(review);
-				}
-			}
 
 			ViewBag.Reviews = reviews;
 			return View(bookModel);
